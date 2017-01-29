@@ -1,0 +1,173 @@
+#include <SoftwareSerial.h>
+#include <DFPlayer_Mini_Mp3.h>
+#define Trig 9
+#define Echo 8
+#include <EEPROM.h>
+//int calibrationTime = 60;  
+  //move
+
+int n = 0;
+int n2 = 0;
+int s = 1;
+int s2 = 21;
+unsigned long t = 0;
+unsigned long t2 = 0;
+unsigned long t0 = 0;
+int r = 0;
+int r2 = 0;
+int r3 = 0;
+int val = 0;  
+int play = 0;
+unsigned int impulseTime = 0; 
+unsigned int distance_sm = 0;
+
+void setup () {
+ pinMode(Trig, OUTPUT); //инициируем как выход 
+  pinMode(Echo, INPUT); //инициируем как вход 
+Serial.begin (9600);
+
+ mp3_set_serial (Serial);   
+   delay (100); 
+    mp3_set_volume (25);
+    delay (100);
+ 
+  pinMode(2, INPUT);
+  
+byte xx[] = {EEPROM.read(1), EEPROM.read(2)};
+int *y = (int *)&xx;
+s2 = y[0];
+
+}
+
+void loop () {   
+// val = analogRead(1);
+// val = digitalRead(2) ;
+//if (val == 1)
+//  {
+//  n = n + 1;
+//delay (100);
+//  }
+//play = 0;
+   digitalWrite(Trig, HIGH); 
+  /* Подаем импульс на вход trig дальномера */
+  delayMicroseconds(10); // равный 10 микросекундам 
+  digitalWrite(Trig, LOW); // Отключаем 
+  impulseTime=pulseIn(Echo, HIGH); // Замеряем длину импульса 
+  distance_sm= impulseTime/58; // Пересчитываем в сантиметры 
+ delay(700); 
+Serial.println(distance_sm); // Выводим на порт 
+ 
+if ((distance_sm < 80) && (distance_sm > 20))
+ { n = n + 1;
+ }
+ 
+ if (n >= 3)
+{
+  
+s = s + 1; 
+  if (s > 2)
+  { 
+  s = 1;
+}
+  
+  switch (s) {
+  case 1: 
+  t = 9000;
+  break;
+  case 2:
+  t = 6000;
+  break;
+
+}
+delay (100); 
+    mp3_set_volume (18);
+ delay (100);
+  mp3_play (s);
+ delay (t);
+mp3_stop ();
+delay (100); 
+
+ 
+for (n2 = 0; n2 <= 0; n2 = n2 + 1)
+{
+   r2 = random(0,4);
+ 
+s2 = s2 + r2 + 1; 
+  if (s2 > 35)
+  { 
+  s2 = 21;
+}
+ switch (s2) {
+  case 21: 
+  t2 = 109000;
+  break;
+  case 22:
+  t2 = 142000;
+  break;
+  case 23:
+  t2 = 198000;
+  break;
+  case 24: 
+  t2 = 193000;
+  break;
+  case 25:
+  t2 = 47000;
+  break;
+  case 26:
+  t2 = 90000;
+  break;
+  case 27: 
+  t2 = 131000;
+  break;
+  case 28:
+  t2 = 125000;
+  break;
+  case 29:
+  t2 = 136000;
+  break;
+  case 30: 
+  t2 = 48000;
+  break;
+  case 31:
+  t2 = 78000;
+  break; 
+  case 32:
+  t2 = 136000;
+  break; 
+  case 33:
+  t2 = 159000;
+  break; 
+  case 34:
+  t2 = 223000;
+  break; 
+  case 35:
+  t2 = 156000;
+  break; 
+}
+//Serial.println(s2);
+//Serial.println(t2);
+delay (100); 
+    mp3_set_volume (24);
+delay (100);
+  mp3_play (s2);
+ delay (t2);
+ mp3_stop ();
+ delay (400);
+ 
+ byte *x = (byte *)&s2;
+EEPROM.write(1, x[0]);
+EEPROM.write(2, x[1]);
+} 
+    // mp3_next (); // Следующий трек
+  //  delay (10000); // пуза 10 секунд
+ n = 0;
+} 
+
+ if (millis() - t0 >  5000)
+{
+n = 0;
+ t0 = millis(); 
+}
+
+
+}
